@@ -1,0 +1,15 @@
+# Backend (Spring Boot)
+backend/target/
+backend/*.log
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
