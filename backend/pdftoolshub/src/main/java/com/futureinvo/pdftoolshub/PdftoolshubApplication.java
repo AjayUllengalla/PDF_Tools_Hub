@@ -8,6 +8,7 @@ public class PdftoolshubApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PdftoolshubApplication.class, args);
+		System.out.println("App Working");
 	}
 
 }
