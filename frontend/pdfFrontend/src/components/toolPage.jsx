@@ -1,27 +1,54 @@
-import { useState } from "react";
-import { Container, Button } from "react-bootstrap";
-import FileUpload from "./fileupload";
-import Loader from "./loader";
-import Progress from "./progressbar";
-import { uploadFiles } from "../services/api";
+import React, { useState } from "react";
+import axios from "axios";
+import { Container, Button, ProgressBar, Spinner, Card } from "react-bootstrap";
 
-const ToolPage = ({ title, endpoint }) => {
+export default function ToolPage({ title, endpoint }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [resultUrl, setResultUrl] = useState(null);
+
+
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
+  };
 
   const handleSubmit = async () => {
     if (files.length === 0) {
-      alert("Please upload file");
+      alert("Please upload a file first");
       return;
     }
 
     setLoading(true);
+    setProgress(0);
+    setResultUrl(null);
 
     try {
-      const res = await uploadFiles(endpoint, files, setProgress);
-      window.open(res.fileUrl);
-    } catch (err) {
+      const formData = new FormData();
+
+      files.forEach((file) => {
+        formData.append("file", file); 
+      });
+
+      const response = await axios.post(
+        `http://localhost:8080${endpoint}`,
+        formData,
+        {
+          responseType: "blob", 
+          onUploadProgress: (e) => {
+            const percent = Math.round((e.loaded * 100) / e.total);
+            setProgress(percent);
+          },
+        }
+      );
+
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      setResultUrl(url);
+
+    } catch (error) {
+      console.error(error);
       alert("Error processing file");
     }
 
@@ -29,19 +56,65 @@ const ToolPage = ({ title, endpoint }) => {
   };
 
   return (
-    <Container className="mt-4 text-center">
-      <h2>{title}</h2>
+    <Container className="mt-5">
+      <Card className="p-4 shadow-lg text-center">
+        <h3 className="mb-3">{title}</h3>
 
-      <FileUpload setFiles={setFiles} />
+        <input
+          type="file"
+          className="form-control"
+          multiple
+          onChange={handleFileChange}
+        />
 
-      {loading && <Loader />}
-      {loading && <Progress progress={progress} />}
+        <Button
+          className="mt-3"
+          variant="primary"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Convert"}
+        </Button>
 
-      <Button className="primary-btn mt-3" onClick={handleSubmit}>
-        {title}
-      </Button>
+        {loading && (
+          <div className="mt-3">
+            <Spinner animation="border" />
+          </div>
+        )}
+
+        {loading && (
+          <ProgressBar
+            now={progress}
+            label={`${progress}%`}
+            className="mt-3"
+          />
+        )}
+
+        {resultUrl && (
+          <div className="mt-4">
+            <a
+              href={resultUrl}
+              download="converted-file"
+              className="btn btn-success"
+            >
+              Download File
+            </a>
+          </div>
+        )}
+
+       
+        {resultUrl && (
+          <div className="mt-4">
+            <iframe
+              src={resultUrl}
+              width="100%"
+              height="500px"
+              title="Preview"
+              style={{ border: "1px solid #ccc" }}
+            />
+          </div>
+        )}
+      </Card>
     </Container>
   );
-};
-
-export default ToolPage;
+}
