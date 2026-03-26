@@ -40,7 +40,6 @@ public class FileUtil {
 		try {
 			Files.createDirectories(dir);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return dir;
