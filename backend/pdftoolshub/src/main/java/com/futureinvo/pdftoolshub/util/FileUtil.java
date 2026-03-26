@@ -19,21 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FileUtil {
 
-    // If not set in properties, fallback to system temp
+    // If not set in properties, fallback to system temporary
     @Value("${app.temp-dir:}")
     private String tempDir;
 
-    //  Get temp directory safely
+    //  Get temporary directory safely
     public Path getTempPath() {
 
         try {
-            // 🔥 Fallback if property is missing
+            //  Fallback if property is missing
             if (tempDir == null || tempDir.isEmpty()) {
                 tempDir = System.getProperty("java.io.tmpdir") + "/pdftoolshub";
             }
-
             Path dir = Paths.get(tempDir);
-
             if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
             }
@@ -45,23 +43,16 @@ public class FileUtil {
         }
     }
 
-    //  Save file to temp directory
+    //  Save file to temporary directory
     public Path saveToTemp(MultipartFile file, String extension) throws Exception {
 
         if (file == null || file.isEmpty()) {
             throw new CustomException("File is null or empty");
         }
-
         String fileName = UUID.randomUUID() + "." + extension;
-
         Path tempDirPath = getTempPath();
-
         Path target = tempDirPath.resolve(fileName);
-
         file.transferTo(target.toFile());
-
-//        log.debug("Saved to temp file: {}", target);
-
         return target;
     }
 
@@ -83,7 +74,7 @@ public class FileUtil {
         }
     }
 
-    // ✅ Download response
+    // Download response
     public ResponseEntity<byte[]> downloadResponse(byte[] data, String fileName, String contentType) {
         return ResponseEntity.ok()
                 .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
@@ -93,7 +84,7 @@ public class FileUtil {
                 .body(data);
     }
 
-    // ✅ Validate PDF file
+    //  Validate PDF file
     public void validatePdf(MultipartFile file) throws IOException {
 
         if (file == null || file.isEmpty()) {
@@ -118,7 +109,7 @@ public class FileUtil {
                header[3] == 0x46;   // F
     }
 
-    // ✅ Get filename without extension
+    //  Get filename without extension
     public String baseName(String filename) {
 
         if (filename == null || filename.isEmpty()) {
