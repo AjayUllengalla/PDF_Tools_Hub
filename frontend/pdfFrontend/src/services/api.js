@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api";
+const API = "http://localhost:8080/pdf/convert/excel-to-pdf";
 
 export const uploadFiles = async (endpoint, files, setProgress) => {
   const formData = new FormData();
 
-  files.forEach(file => formData.append("files", file));
+  files.forEach(file => formData.append("file", file));
 
   const res = await axios.post(`${API}/${endpoint}`, formData, {
     onUploadProgress: (data) => {
