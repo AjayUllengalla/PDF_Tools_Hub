@@ -39,4 +39,28 @@ public class PDFController {
 				"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				
 	}
+	@PostMapping("/word-to-pdf")
+	public ResponseEntity<byte[]> wordToPdf(
+	        @RequestParam("file") MultipartFile file) throws Exception {
+
+	    if (file == null || file.isEmpty()) {
+	        throw new RuntimeException("File is missing or empty");
+	    }
+
+	    byte[] result = pdfService.wordToPdf(file);
+
+	    String originalName = file.getOriginalFilename();
+
+	    if (originalName == null) {
+	        originalName = "converted";
+	    }
+
+	    String name = fileUtil.baseName(originalName) + ".pdf";
+
+	    return fileUtil.downloadResponse(
+	            result,
+	            name,
+	            "application/pdf"
+	    );
+	}
 }
