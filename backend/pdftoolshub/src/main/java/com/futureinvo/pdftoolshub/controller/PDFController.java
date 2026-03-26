@@ -63,4 +63,14 @@ public class PDFController {
 	            "application/pdf"
 	    );
 	}
+	 @PostMapping("/excel-to-pdf")
+	    public ResponseEntity<byte[]> excelToPdf(
+	            @RequestParam("file") MultipartFile file) throws Exception {
+
+//	        log.info("POST /api/convert/excel-to-pdf — {}", file.getOriginalFilename());
+	        byte[] result = pdfService.excelToPdf(file);
+	        String name   = fileUtil.baseName(file.getOriginalFilename()) + ".pdf";
+
+	        return fileUtil.downloadResponse(result, name, "application/pdf");
+	    }
 }
