@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.Splitter;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,4 +56,44 @@ public class PDFEditingService {
 	        }
 	    }
 
+	    public byte[] splitPdf(MultipartFile file, int startPage, int endPage) throws Exception {
+	    	
+	    	fileUtil.validatePdf(file);
+	    	if(startPage < 1) {
+	    		throw new CustomException("Page should start from 1");
+	    	}
+	    	Path tempPath = null;
+	    	try {
+	    		tempPath = fileUtil.saveToTemp(file, "pdf");
+	    		
+	    		try(PDDocument source = PDDocument.load(tempPath.toFile())) { 
+	    			int totalPages = source.getNumberOfPages();
+	    			int end = (endPage < 1 || endPage > totalPages) ? totalPages :endPage;
+	    			
+	    			if(startPage > end) {
+	    				throw new CustomException("Start page must be < endPage");
+	    			}
+	    			
+	    			Splitter splitter = new Splitter();
+	    			splitter.setStartPage(startPage);
+	    			splitter.setEndPage(end);
+	    			splitter.setSplitAtPage(end - startPage + 1);
+	    			
+	    			List<PDDocument> parts = splitter.split(source);
+	    			
+	    			try(PDDocument result = parts.get(0);
+	    					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+	    				result.save(out);
+	    				
+	    				for(int i=0 ;i<parts.size();i++) {
+	    					parts.get(i).close();
+	    				}
+	    				
+	    				return out.toByteArray();
+	    			}
+	    		}
+	    	} finally {
+	    		fileUtil.deleteFile(tempPath);
+	    	}
+	    }
 }
