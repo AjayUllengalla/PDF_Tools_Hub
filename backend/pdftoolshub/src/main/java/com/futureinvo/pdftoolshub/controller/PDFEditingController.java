@@ -31,4 +31,13 @@ public class PDFEditingController {
         return fileUtil.downloadResponse(result, "merged.pdf", "application/pdf");
     }
 
+    @PostMapping("/split")
+    public ResponseEntity<byte[]> splitPdf(
+    		@RequestParam("file") MultipartFile file, 
+    		@RequestParam(value = "startPage", defaultValue = "1") int startPage,
+    		@RequestParam(value = "endPage", defaultValue = "-1") int endPage) throws Exception {
+    	byte[] result = editingService.splitPdf(file, startPage, endPage);
+    	String name = fileUtil.baseName(file.getOriginalFilename()) +"_split.pdf";
+    	return fileUtil.downloadResponse(result, name, "application/pdf");
+    }
 }
