@@ -3,11 +3,15 @@ package com.futureinvo.pdftoolshub.service;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.bouncycastle.util.Integers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,4 +100,59 @@ public class PDFEditingService {
 	    		fileUtil.deleteFile(tempPath);
 	    	}
 	    }
+	    
+	    public byte[] rotatePdf(MultipartFile file, int angle, String pageNums) throws Exception {
+	    	
+	    	fileUtil.validatePdf(file);
+	    	
+	    	if(angle !=90 && angle !=180 && angle != 270) {
+	    		throw new CustomException("Rotation angle must be 90,180 or 270 degress");
+	    	}
+	    	Path tempPath = null;
+	    	try  {
+	    		tempPath = fileUtil.saveToTemp(file, "pdf");
+	    		
+	    		try(PDDocument pdf = PDDocument.load(tempPath.toFile());
+	    				ByteArrayOutputStream out = new ByteArrayOutputStream()){
+	    			
+	    			List<PDPage> pages = new ArrayList<>();
+	    			pdf.getPages().forEach(pages::add);
+	    			
+	    			Set<Integer> targets = resolvePages(pageNums, pages.size());
+	    			
+	    			for(int i = 0;i<pages.size();i++) {
+	    				if(targets.contains(i+1)) {
+	    					PDPage page = pages.get(i);
+	    					int current = page.getRotation();
+	    					page.setRotation((current + angle) % 360);
+	    				}
+	    			}
+	    			pdf.save(out);
+	    			return out.toByteArray();
+	    		}
+	    	} finally {
+	    		fileUtil.deleteFile(tempPath);
+	    	}
+	    }
+
+	    private Set<Integer> resolvePages(String pageNums, int total) {
+	        Set<Integer> result = new LinkedHashSet<>();
+	        if ("all".equalsIgnoreCase(pageNums) || pageNums == null || pageNums.isBlank()) {
+	            for (int i = 1; i <= total; i++) result.add(i);
+	            return result;
+	        }
+	        for (String part : pageNums.split(",")) {
+	            try {
+	                int p = Integer.parseInt(part.trim());
+	                if (p >= 1 && p <= total) result.add(p);
+	            } catch (NumberFormatException ex) {
+	                throw new CustomException("Enter Number Correct");
+	            }
+	        }
+	        if (result.isEmpty()) {
+	            throw new CustomException("No valid page numbers found in: " + pageNums);
+	        }
+	        return result;
+	    }
+	    
 }
