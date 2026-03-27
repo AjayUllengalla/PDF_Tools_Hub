@@ -2,6 +2,7 @@ package com.futureinvo.pdftoolshub.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +17,7 @@ import com.futureinvo.pdftoolshub.util.FileUtil;
 
 @RestController
 @RequestMapping("/pdf/convert")
+@CrossOrigin("*")
 public class PDFController {
 
 	@Autowired
@@ -39,4 +41,38 @@ public class PDFController {
 				"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				
 	}
+	@PostMapping("/word-to-pdf")
+	public ResponseEntity<byte[]> wordToPdf(
+	        @RequestParam("file") MultipartFile file) throws Exception {
+
+	    if (file == null || file.isEmpty()) {
+	        throw new RuntimeException("File is missing or empty");
+	    }
+
+	    byte[] result = pdfService.wordToPdf(file);
+
+	    String originalName = file.getOriginalFilename();
+
+	    if (originalName == null) {
+	        originalName = "converted";
+	    }
+
+	    String name = fileUtil.baseName(originalName) + ".pdf";
+
+	    return fileUtil.downloadResponse(
+	            result,
+	            name,
+	            "application/pdf"
+	    );
+	}
+	 @PostMapping("/excel-to-pdf")
+	    public ResponseEntity<byte[]> excelToPdf(
+	            @RequestParam("file") MultipartFile file) throws Exception {
+
+//	        log.info("POST /api/convert/excel-to-pdf — {}", file.getOriginalFilename());
+	        byte[] result = pdfService.excelToPdf(file);
+	        String name   = fileUtil.baseName(file.getOriginalFilename()) + ".pdf";
+
+	        return fileUtil.downloadResponse(result, name, "application/pdf");
+	    }
 }
