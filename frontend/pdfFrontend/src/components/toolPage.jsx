@@ -8,12 +8,14 @@ export default function ToolPage({ title, endpoint }) {
   const [progress, setProgress] = useState(0);
   const [resultUrl, setResultUrl] = useState(null);
 
-
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
 
-  const handleSubmit = async () => {
+
+  const handleSubmit = async (e) => {
+    e?.preventDefault(); 
+
     if (files.length === 0) {
       alert("Please upload a file first");
       return;
@@ -27,14 +29,14 @@ export default function ToolPage({ title, endpoint }) {
       const formData = new FormData();
 
       files.forEach((file) => {
-        formData.append("file", file); 
+        formData.append("file", file);
       });
 
       const response = await axios.post(
         `http://localhost:8080${endpoint}`,
         formData,
         {
-          responseType: "blob", 
+          responseType: "blob",
           onUploadProgress: (e) => {
             const percent = Math.round((e.loaded * 100) / e.total);
             setProgress(percent);
@@ -42,9 +44,11 @@ export default function ToolPage({ title, endpoint }) {
         }
       );
 
-      const blob = new Blob([response.data]);
-      const url = window.URL.createObjectURL(blob);
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
 
+      const url = window.URL.createObjectURL(blob);
       setResultUrl(url);
 
     } catch (error) {
@@ -55,18 +59,28 @@ export default function ToolPage({ title, endpoint }) {
     setLoading(false);
   };
 
+  
   const getAcceptedTypes = (endpoint) => {
-  if (endpoint.includes("pdf-to-word")) return ".pdf";
-  if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
-  if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
-  return "*";
-};
+    if (endpoint.includes("pdf-to-word")) return ".pdf";
+    if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
+    if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
+    return "*";
+  };
+
+ 
+  const getFileName = (endpoint) => {
+    if (endpoint.includes("pdf-to-word")) return "converted.docx";
+    if (endpoint.includes("word-to-pdf")) return "converted.pdf";
+    if (endpoint.includes("excel-to-pdf")) return "converted.pdf";
+    return "converted-file";
+  };
 
   return (
     <Container className="mt-5">
       <Card className="p-4 shadow-lg text-center">
         <h3 className="mb-3">{title}</h3>
 
+        
         <input
           type="file"
           className="form-control"
@@ -75,7 +89,9 @@ export default function ToolPage({ title, endpoint }) {
           onChange={handleFileChange}
         />
 
+       
         <Button
+          type="button"  
           className="mt-3"
           variant="primary"
           onClick={handleSubmit}
@@ -84,12 +100,14 @@ export default function ToolPage({ title, endpoint }) {
           {loading ? "Processing..." : "Convert"}
         </Button>
 
+      
         {loading && (
           <div className="mt-3">
             <Spinner animation="border" />
           </div>
         )}
 
+       
         {loading && (
           <ProgressBar
             now={progress}
@@ -98,11 +116,12 @@ export default function ToolPage({ title, endpoint }) {
           />
         )}
 
+        
         {resultUrl && (
           <div className="mt-4">
             <a
               href={resultUrl}
-              download="converted-file"
+              download={getFileName(endpoint)}
               className="btn btn-success"
             >
               Download File
@@ -110,7 +129,7 @@ export default function ToolPage({ title, endpoint }) {
           </div>
         )}
 
-       
+        
         {resultUrl && (
           <div className="mt-4">
             <iframe
