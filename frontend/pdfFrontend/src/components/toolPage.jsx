@@ -55,6 +55,13 @@ export default function ToolPage({ title, endpoint }) {
     setLoading(false);
   };
 
+  const getAcceptedTypes = (endpoint) => {
+  if (endpoint.includes("pdf-to-word")) return ".pdf";
+  if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
+  if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
+  return "*";
+};
+
   return (
     <Container className="mt-5">
       <Card className="p-4 shadow-lg text-center">
@@ -64,6 +71,7 @@ export default function ToolPage({ title, endpoint }) {
           type="file"
           className="form-control"
           multiple
+          accept={getAcceptedTypes(endpoint)}
           onChange={handleFileChange}
         />
 
