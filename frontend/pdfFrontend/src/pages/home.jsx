@@ -1,10 +1,12 @@
 import { Container, Row, Col } from "react-bootstrap";
 import ToolCard from "../components/toolcard";
+import Hero from "../components/hero";
 
 const Home = () => {
   return (
     <Container>
 
+      <Hero/>
       <h2 className="text-center mt-4">All PDF Tools</h2>
 
       <h4 className="section-title">PDF Conversion</h4>

@@ -182,3 +182,70 @@
     border-right-color: var(--border);
   }
 }
+
+
+
+
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(to right, #6c63ff, #5a54e8);
+  color: white;
+  padding: 100px 20px;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-section p {
+  margin: 20px 0;
+  font-size: 1.2rem;
+}
+
+
+.footer {
+  background: #f8f9fa;
+  padding: 20px;
+  margin-top: 50px;
+  font-size: 14px;
+}
+
+/* Navbar Hover Effect */
+.navbar-nav .nav-link:hover {
+  color: #6c63ff !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1ff;
+  color: #6c63ff;
+} 
+
+
+
+
+
+
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Social icons */
+/* footer i {
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+footer i:hover {
+  color: #6c63ff;
+  transform: scale(1.2);
+} */
