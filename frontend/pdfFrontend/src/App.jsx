@@ -12,6 +12,7 @@ import Unlock from "./pages/unlock";
 import PdfToWord from "./pages/pdftoWord";
 import WordToPdf from "./pages/wordtoPdf";
 import ExcelToPdf from "./pages/exceltopdf";
+import Footer from "./components/footer";
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function App() {
         <Route path="/excel-to-pdf" element={<ExcelToPdf />} />
 
       </Routes>
+
+      <Footer/>
     </BrowserRouter>
   );
 }
