@@ -226,6 +226,24 @@ export default function ToolPage({ title, endpoint }) {
         )}
 
         
+        )}
+
+        
+        {isUnlock && (
+          <>
+            <input
+              type="password"
+              placeholder="Enter PDF password"
+              className="form-control mt-2"
+              onChange={(e) => setUserPassword(e.target.value)}
+            />
+            <small className="text-muted">
+              Enter the password used to lock this PDF
+            </small>
+          </>
+        )}
+
+        
         <Button className="mt-3" onClick={handleSubmit} disabled={loading}>
           {loading ? "Processing..." : "Confirm"}
         </Button>
