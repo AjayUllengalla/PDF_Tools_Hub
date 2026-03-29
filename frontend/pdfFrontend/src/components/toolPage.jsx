@@ -105,10 +105,7 @@ export default function ToolPage({ title, endpoint }) {
     setLoading(false);
   };
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
   const getAcceptedTypes = () => {
   if (endpoint.includes("pdf-to-word")) return ".pdf";
   if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
@@ -213,6 +210,24 @@ export default function ToolPage({ title, endpoint }) {
             />
           </>
         )}
+
+        
+        {isUnlock && (
+          <>
+            <input
+              type="password"
+              placeholder="Enter PDF password"
+              className="form-control mt-2"
+              onChange={(e) => setUserPassword(e.target.value)}
+            />
+            <small className="text-muted">
+              Enter the password used to lock this PDF
+            </small>
+          </>
+        )}
+
+        
+        
 
         
         {isUnlock && (
