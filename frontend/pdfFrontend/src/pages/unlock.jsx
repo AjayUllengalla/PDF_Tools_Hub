@@ -1,5 +1,5 @@
 import ToolPage from "../components/toolPage";
 
 export default function Unlock() {
-  return <ToolPage title="Unlock PDF" endpoint="unlock" />;
+  return <ToolPage title="Unlock PDF" endpoint="/pdf/security/unlock" />;
 }
