@@ -6,7 +6,7 @@ const ToolCard = ({ title, path }) => {
 
   return (
     <Card
-      className="card-hover p-3 text-center"
+      className="card-hover p-3 text-center" 
       onClick={() => navigate(path)}
     >
       <Card.Body>

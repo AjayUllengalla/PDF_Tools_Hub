@@ -1,9 +1,17 @@
 import { Container, Row, Col } from "react-bootstrap";
 import ToolCard from "../components/toolcard";
+import Hero from "../components/hero";
 
 const Home = () => {
   return (
-    <Container>
+    <>
+    <Hero/>
+    <Container className="mt-5 shadow"
+        style={{
+          background: "linear-gradient(135deg, rgb(147, 146, 207),rgb(121, 164, 230))",
+          padding: "30px",
+          borderRadius: "20px"
+        }}>
 
       <h2 className="text-center mt-4">All PDF Tools</h2>
 
@@ -33,6 +41,7 @@ const Home = () => {
       </Row>
 
     </Container>
+    </>
   );
 };
 

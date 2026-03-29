@@ -105,6 +105,10 @@ export default function ToolPage({ title, endpoint }) {
     setLoading(false);
   };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
   const getAcceptedTypes = () => {
   if (endpoint.includes("pdf-to-word")) return ".pdf";
   if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
