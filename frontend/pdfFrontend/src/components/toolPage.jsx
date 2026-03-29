@@ -105,6 +105,20 @@ export default function ToolPage({ title, endpoint }) {
     setLoading(false);
   };
 
+  const getAcceptedTypes = () => {
+  if (endpoint.includes("pdf-to-word")) return ".pdf";
+  if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
+  if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
+  return "*";
+};
+
+  const getFileName = (endpoint) => {
+    if (endpoint.includes("pdf-to-word")) return "converted.docx";
+    if (endpoint.includes("word-to-pdf")) return "converted.pdf";
+    if (endpoint.includes("excel-to-pdf")) return "converted.pdf";
+    return "converted-file";
+  };
+
   return (
     <Container className="mt-5">
       <Card className="p-4 shadow-lg text-center">
@@ -115,6 +129,7 @@ export default function ToolPage({ title, endpoint }) {
           type="file"
           className="form-control mt-3"
           multiple={isMerge}
+          accept={getAcceptedTypes(endpoint)}
           onChange={handleFileChange}
         />
 
@@ -193,6 +208,24 @@ export default function ToolPage({ title, endpoint }) {
               onChange={(e) => setOwnerPassword(e.target.value)}
             />
           </>
+        )}
+
+        
+        {isUnlock && (
+          <>
+            <input
+              type="password"
+              placeholder="Enter PDF password"
+              className="form-control mt-2"
+              onChange={(e) => setUserPassword(e.target.value)}
+            />
+            <small className="text-muted">
+              Enter the password used to lock this PDF
+            </small>
+          </>
+        )}
+
+        
         )}
 
         
