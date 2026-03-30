@@ -49,7 +49,7 @@ export default function ToolPage({ title, endpoint }) {
     try {
       const formData = new FormData();
 
-      files.forEach((file) => {
+      files.forEach((file) => { 
         if (isMerge) {
           formData.append("files", file);
         } else {
