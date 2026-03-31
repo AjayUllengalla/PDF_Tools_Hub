@@ -21,7 +21,10 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-
+import org.docx4j.Docx4J;
+import org.docx4j.fonts.IdentityPlusMapper;
+import org.docx4j.fonts.Mapper;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +92,6 @@ public class PDFService {
 
         String originalName = wordFile.getOriginalFilename();
 
-        // prevent wrong file type crash
         if (originalName == null || !originalName.toLowerCase().endsWith(".docx")) {
             throw new CustomException("Only .docx files are supported");
         }
@@ -99,73 +101,33 @@ public class PDFService {
         try {
             tempDocx = fileUtil.saveToTemp(wordFile, "docx");
 
-            StringBuilder content = new StringBuilder();
-
-            try (XWPFDocument doc = new XWPFDocument(
-                    new FileInputStream(tempDocx.toFile()))) {
-
-                for (XWPFParagraph para : doc.getParagraphs()) {
-                    content.append(para.getText()).append("\n");
-                }
-            }
-
-            try (PDDocument pdf = new PDDocument();
+            try (FileInputStream fis = new FileInputStream(tempDocx.toFile());
                  ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-                PDPage page = new PDPage();
-                pdf.addPage(page);
+                //  BACK TO SAFE LOADING
+                WordprocessingMLPackage wordMLPackage =
+                        WordprocessingMLPackage.load(fis);
 
-                PDPageContentStream stream =
-                        new PDPageContentStream(pdf, page);
+                //  FONT FIX
+                Mapper fontMapper = new IdentityPlusMapper();
+                wordMLPackage.setFontMapper(fontMapper);
 
-                stream.beginText();
-                stream.setFont(PDType1Font.HELVETICA, 12);
-                stream.setLeading(14.5f);
-                stream.newLineAtOffset(50, 750);
+                //  CONVERT
+                Docx4J.toPDF(wordMLPackage, out);
 
-                String[] lines = content.toString().split("\\n");
-
-                float yPosition = 750;
-
-                for (String line : lines) {
-
-                    if (yPosition < 50) {
-                        stream.endText();
-                        stream.close();
-
-                        page = new PDPage();
-                        pdf.addPage(page);
-
-                        stream = new PDPageContentStream(pdf, page);
-                        stream.beginText();
-                        stream.setFont(PDType1Font.HELVETICA, 12);
-                        stream.setLeading(14.5f);
-                        stream.newLineAtOffset(50, 750);
-
-                        yPosition = 750;
-                    }
-
-                    stream.showText(line.isEmpty() ? " " : line);
-                    stream.newLine();
-                    yPosition -= 14.5f;
-                }
-
-                stream.endText();
-                stream.close();
-
-                pdf.save(out);
                 return out.toByteArray();
             }
 
         } catch (Exception e) {
-            throw new CustomException("Error converting Word to PDF");
+            e.printStackTrace();
+
+            throw new CustomException("Invalid or unsupported Word file. Please re-save the document.");
         } finally {
             if (tempDocx != null) {
                 fileUtil.deleteFile(tempDocx);
             }
         }
     }
-
 
     public byte[] excelToPdf(MultipartFile excelFile) throws Exception {
 
