@@ -93,7 +93,7 @@ export default function ToolPage({ title, endpoint }) {
       }
 
       const response = await axios.post(
-        `http://localhost:8080${endpoint}`,
+        `https://pdf-tools-hub-2.onrender.com${endpoint}`,
         formData,
         {
           responseType: "blob",
@@ -112,23 +112,31 @@ export default function ToolPage({ title, endpoint }) {
       setResultUrl(url);
 
     } catch (error) {
-      console.error("Error:", error);
+  console.error("Error:", error);
 
-      if (error.response) {
-        const message = error.response.data;
+  if (error.response && error.response.data instanceof Blob) {
+    const reader = new FileReader();
 
-        if (
-          typeof message === "string" &&
-          message.toLowerCase().includes("password")
-        ) {
-          alert("Incorrect password");
-        } else {
-          alert(message || "Error processing file");
-        }
+    reader.onload = () => {
+      const message = reader.result;
+
+      
+      const msg = message.toLowerCase();
+
+      if (msg.includes("incorrect password")) {
+        alert("Incorrect password");
+      } else if (msg.includes("password is required")) {
+        alert("Password is mandatory");
       } else {
-        alert("Server not responding");
+        alert(message || "Error processing file");
       }
-    }
+    };
+
+    reader.readAsText(error.response.data);
+  } else {
+    alert("Server not responding");
+  }
+}
 
     setLoading(false);
   };

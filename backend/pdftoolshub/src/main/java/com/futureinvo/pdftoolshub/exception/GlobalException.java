@@ -12,6 +12,7 @@ public class GlobalException {
 		return ResponseEntity.badRequest().body(ex.getMessage());
 	}
 
+	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleException(Exception ex){
 		return ResponseEntity.status(500).body("Something wnet Wrong");
 	}
