@@ -302,4 +302,4 @@ export default function ToolPage({ title, endpoint }) {
       </Card>
     </Container>
   );
-}
+
