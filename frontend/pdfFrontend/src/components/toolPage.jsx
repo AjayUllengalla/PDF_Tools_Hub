@@ -40,20 +40,14 @@ export default function ToolPage({ title, endpoint }) {
       return;
     }
 
-    
-    if (isUnlock) {
-      if (!userPassword) {
-        alert("Password is mandatory");
-        return;
-      }
+    if (isUnlock && !userPassword) {
+      alert("Password is mandatory");
+      return;
     }
 
-    
-    if (isLock) {
-      if (!userPassword) {
-        alert("User password is mandatory");
-        return;
-      }
+    if (isLock && !userPassword) {
+      alert("User password is mandatory");
+      return;
     }
 
     setLoading(true);
@@ -112,44 +106,24 @@ export default function ToolPage({ title, endpoint }) {
       setResultUrl(url);
 
     } catch (error) {
-  console.error("Error:", error);
-
-  if (error.response && error.response.data instanceof Blob) {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const message = reader.result;
-
-      
-      const msg = message.toLowerCase();
-
-      if (msg.includes("incorrect password")) {
-        alert("Incorrect password");
-      } else if (msg.includes("password is required")) {
-        alert("Password is mandatory");
-      } else {
-        alert(message || "Error processing file");
-      }
-    };
-
-    reader.readAsText(error.response.data);
-  } else {
-    alert("Server not responding");
-  }
-}
       console.error("Error:", error);
 
-      if (error.response) {
-        const message = error.response.data;
+      if (error.response && error.response.data instanceof Blob) {
+        const reader = new FileReader();
 
-        if (
-          typeof message === "string" &&
-          message.toLowerCase().includes("password")
-        ) {
-          alert("Incorrect password");
-        } else {
-          alert(message || "Error processing file");
-        }
+        reader.onload = () => {
+          const message = reader.result.toLowerCase();
+
+          if (message.includes("incorrect password")) {
+            alert("Incorrect password");
+          } else if (message.includes("password is required")) {
+            alert("Password is mandatory");
+          } else {
+            alert(message || "Error processing file");
+          }
+        };
+
+        reader.readAsText(error.response.data);
       } else {
         alert("Server not responding");
       }
@@ -165,13 +139,6 @@ export default function ToolPage({ title, endpoint }) {
     return "*";
   };
 
-  const getFileName = (endpoint) => {
-    if (endpoint.includes("pdf-to-word")) return "converted.docx";
-    if (endpoint.includes("word-to-pdf")) return "converted.pdf";
-    if (endpoint.includes("excel-to-pdf")) return "converted.pdf";
-    return "converted-file";
-  };
-
   return (
     <Container className="mt-5">
       <Card className="p-4 shadow-lg text-center">
@@ -181,7 +148,7 @@ export default function ToolPage({ title, endpoint }) {
           type="file"
           className="form-control mt-3"
           multiple={isMerge}
-          accept={getAcceptedTypes(endpoint)}
+          accept={getAcceptedTypes()}
           onChange={handleFileChange}
         />
 
@@ -196,81 +163,6 @@ export default function ToolPage({ title, endpoint }) {
           </div>
         )}
 
-        {isMerge && (
-          <p className="text-muted mt-2">
-            Hold <b>Ctrl</b> (Windows) or <b>Cmd</b> (Mac) to select multiple files
-          </p>
-        )}
-
-        {isSplit && (
-          <>
-            <input
-              type="number"
-              placeholder="Start Page"
-              className="form-control mt-2"
-              onChange={(e) => setStartPage(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="End Page"
-              className="form-control mt-2"
-              onChange={(e) => setEndPage(e.target.value)}
-            />
-          </>
-        )}
-
-        {isRotate && (
-          <>
-            <select
-              className="form-control mt-2"
-              onChange={(e) => setAngle(e.target.value)}
-            >
-              <option value="90">Rotate 90°</option>
-              <option value="180">Rotate 180°</option>
-              <option value="270">Rotate 270°</option>
-            </select>
-
-            <input
-              type="text"
-              placeholder="Page numbers (e.g. 1,2 or all)"
-              className="form-control mt-2"
-              onChange={(e) => setPageNums(e.target.value)}
-            />
-          </>
-        )}
-
-        {isLock && (
-          <>
-            <input
-              type="password"
-              placeholder="User Password"
-              className="form-control mt-2"
-              onChange={(e) => setUserPassword(e.target.value)}
-            />
-
-            <input
-              type="password"
-              placeholder="Owner Password (optional)"
-              className="form-control mt-2"
-              onChange={(e) => setOwnerPassword(e.target.value)}
-            />
-          </>
-        )}
-
-        {isUnlock && (
-          <>
-            <input
-              type="password"
-              placeholder="Enter PDF password"
-              className="form-control mt-2"
-              onChange={(e) => setUserPassword(e.target.value)}
-            />
-            <small className="text-muted">
-              Enter the password used to lock this PDF
-            </small>
-          </>
-        )}
-
         <Button className="mt-3" onClick={handleSubmit} disabled={loading}>
           {loading ? "Processing..." : "Confirm"}
         </Button>
@@ -283,23 +175,23 @@ export default function ToolPage({ title, endpoint }) {
         )}
 
         {resultUrl && (
-          <a href={resultUrl} download className="btn btn-success mt-3">
-            Download File
-          </a>
-        )}
+          <>
+            <a href={resultUrl} download className="btn btn-success mt-3">
+              Download File
+            </a>
 
-        {resultUrl && (
-          <div className="mt-4">
-            <iframe
-              src={resultUrl}
-              width="100%"
-              height="500px"
-              title="Preview"
-              style={{ border: "1px solid #ccc" }}
-            />
-          </div>
+            <div className="mt-4">
+              <iframe
+                src={resultUrl}
+                width="100%"
+                height="500px"
+                title="Preview"
+                style={{ border: "1px solid #ccc" }}
+              />
+            </div>
+          </>
         )}
       </Card>
     </Container>
   );
-
+}
