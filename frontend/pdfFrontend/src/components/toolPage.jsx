@@ -137,6 +137,23 @@ export default function ToolPage({ title, endpoint }) {
     alert("Server not responding");
   }
 }
+      console.error("Error:", error);
+
+      if (error.response) {
+        const message = error.response.data;
+
+        if (
+          typeof message === "string" &&
+          message.toLowerCase().includes("password")
+        ) {
+          alert("Incorrect password");
+        } else {
+          alert(message || "Error processing file");
+        }
+      } else {
+        alert("Server not responding");
+      }
+    }
 
     setLoading(false);
   };
