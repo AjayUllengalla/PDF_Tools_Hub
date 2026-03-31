@@ -104,15 +104,15 @@ public class PDFService {
             try (FileInputStream fis = new FileInputStream(tempDocx.toFile());
                  ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-                // ✅ BACK TO SAFE LOADING
+                //  BACK TO SAFE LOADING
                 WordprocessingMLPackage wordMLPackage =
                         WordprocessingMLPackage.load(fis);
 
-                // ✅ FONT FIX
+                //  FONT FIX
                 Mapper fontMapper = new IdentityPlusMapper();
                 wordMLPackage.setFontMapper(fontMapper);
 
-                // ✅ CONVERT
+                //  CONVERT
                 Docx4J.toPDF(wordMLPackage, out);
 
                 return out.toByteArray();
