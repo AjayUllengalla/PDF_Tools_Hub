@@ -19,12 +19,11 @@ export default function ToolPage({ title, endpoint }) {
   const [allowPrinting, setAllowPrinting] = useState(true);
   const [allowCopying, setAllowCopying] = useState(false);
 
-  
   const isMerge = endpoint.includes("merge");
   const isSplit = endpoint.includes("split");
   const isRotate = endpoint.includes("rotate");
-  const isUnlock = endpoint.includes("unlock"); 
-  const isLock = endpoint.includes("lock") && !isUnlock; 
+  const isUnlock = endpoint.includes("unlock");
+  const isLock = endpoint.includes("lock") && !isUnlock;
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
@@ -36,10 +35,25 @@ export default function ToolPage({ title, endpoint }) {
       return;
     }
 
-    
     if (isMerge && files.length < 2) {
       alert("Please select at least 2 files for merging");
       return;
+    }
+
+    
+    if (isUnlock) {
+      if (!userPassword) {
+        alert("Password is mandatory");
+        return;
+      }
+    }
+
+    
+    if (isLock) {
+      if (!userPassword) {
+        alert("User password is mandatory");
+        return;
+      }
     }
 
     setLoading(true);
@@ -49,7 +63,7 @@ export default function ToolPage({ title, endpoint }) {
     try {
       const formData = new FormData();
 
-      files.forEach((file) => { 
+      files.forEach((file) => {
         if (isMerge) {
           formData.append("files", file);
         } else {
@@ -98,20 +112,33 @@ export default function ToolPage({ title, endpoint }) {
       setResultUrl(url);
 
     } catch (error) {
-      console.error(error);
-      alert("Error processing file");
+      console.error("Error:", error);
+
+      if (error.response) {
+        const message = error.response.data;
+
+        if (
+          typeof message === "string" &&
+          message.toLowerCase().includes("password")
+        ) {
+          alert("Incorrect password");
+        } else {
+          alert(message || "Error processing file");
+        }
+      } else {
+        alert("Server not responding");
+      }
     }
 
     setLoading(false);
   };
 
-
   const getAcceptedTypes = () => {
-  if (endpoint.includes("pdf-to-word")) return ".pdf";
-  if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
-  if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
-  return "*";
-};
+    if (endpoint.includes("pdf-to-word")) return ".pdf";
+    if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
+    if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
+    return "*";
+  };
 
   const getFileName = (endpoint) => {
     if (endpoint.includes("pdf-to-word")) return "converted.docx";
@@ -125,7 +152,6 @@ export default function ToolPage({ title, endpoint }) {
       <Card className="p-4 shadow-lg text-center">
         <h3>{title}</h3>
 
-        
         <input
           type="file"
           className="form-control mt-3"
@@ -134,7 +160,6 @@ export default function ToolPage({ title, endpoint }) {
           onChange={handleFileChange}
         />
 
-       
         {files.length > 0 && (
           <div className="mt-3 text-start">
             <strong>Selected Files:</strong>
@@ -146,14 +171,12 @@ export default function ToolPage({ title, endpoint }) {
           </div>
         )}
 
-       
         {isMerge && (
           <p className="text-muted mt-2">
             Hold <b>Ctrl</b> (Windows) or <b>Cmd</b> (Mac) to select multiple files
           </p>
         )}
 
-        
         {isSplit && (
           <>
             <input
@@ -171,7 +194,6 @@ export default function ToolPage({ title, endpoint }) {
           </>
         )}
 
-       
         {isRotate && (
           <>
             <select
@@ -192,7 +214,6 @@ export default function ToolPage({ title, endpoint }) {
           </>
         )}
 
-        
         {isLock && (
           <>
             <input
@@ -211,7 +232,6 @@ export default function ToolPage({ title, endpoint }) {
           </>
         )}
 
-        
         {isUnlock && (
           <>
             <input
@@ -226,30 +246,10 @@ export default function ToolPage({ title, endpoint }) {
           </>
         )}
 
-        
-        
-
-        
-        {isUnlock && (
-          <>
-            <input
-              type="password"
-              placeholder="Enter PDF password"
-              className="form-control mt-2"
-              onChange={(e) => setUserPassword(e.target.value)}
-            />
-            <small className="text-muted">
-              Enter the password used to lock this PDF
-            </small>
-          </>
-        )}
-
-        
         <Button className="mt-3" onClick={handleSubmit} disabled={loading}>
           {loading ? "Processing..." : "Confirm"}
         </Button>
 
-        
         {loading && (
           <>
             <Spinner className="mt-3" />
@@ -257,14 +257,12 @@ export default function ToolPage({ title, endpoint }) {
           </>
         )}
 
-       
         {resultUrl && (
           <a href={resultUrl} download className="btn btn-success mt-3">
             Download File
           </a>
         )}
 
-       
         {resultUrl && (
           <div className="mt-4">
             <iframe
