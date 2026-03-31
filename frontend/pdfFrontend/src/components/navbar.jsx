@@ -67,10 +67,27 @@ const NavBar = () => {
     >
       <Container>
 
-        {/* ✅ Updated Brand */}
         <Navbar.Brand as={Link} to="/" className="fw-bold fs-4 d-flex align-items-center gap-2">
           <LogoSVG />
-          PDF Tools Hub
+          {/* PDF Tools Hub */}
+          <div
+            className="d-none d-md-flex flex-column justify-content-center ms-2"
+            style={{ lineHeight: 1 }}
+          >
+            <span
+              style={{
+                fontSize: 9,
+                color: "rgba(255,255,255,0.42)",
+                letterSpacing: "1.8px",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                fontFamily: "'Segoe UI', Arial, sans-serif",
+                whiteSpace: "nowrap",
+              }}
+            >
+              All-in-one PDF Toolkit
+            </span>
+          </div>
         </Navbar.Brand>
 
         <Navbar.Toggle />
