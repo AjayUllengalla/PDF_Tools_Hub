@@ -139,6 +139,21 @@ export default function ToolPage({ title, endpoint }) {
     return "*";
   };
 
+  const getFileName = (endpoint) => {
+    if (endpoint.includes("pdf-to-word")) return "converted.docx";
+    if (endpoint.includes("word-to-pdf")) return "converted.pdf";
+    if (endpoint.includes("excel-to-pdf")) return "converted.pdf";
+    return "converted-file";
+  };
+
+
+  const getAcceptedTypes = () => {
+    if (endpoint.includes("pdf-to-word")) return ".pdf";
+    if (endpoint.includes("word-to-pdf")) return ".doc,.docx";
+    if (endpoint.includes("excel-to-pdf")) return ".xls,.xlsx";
+    return "*";
+  };
+
   return (
     <Container className="mt-5">
       <Card className="p-4 shadow-lg text-center">

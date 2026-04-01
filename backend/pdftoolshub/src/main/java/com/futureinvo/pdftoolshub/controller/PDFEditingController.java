@@ -44,8 +44,8 @@ public class PDFEditingController {
     @PostMapping("/rotate")
     public ResponseEntity<byte[]> rotatePdf(
     		@RequestParam("file") MultipartFile file,
-    		@RequestParam int angle,
-    		@RequestParam String pageNums) throws Exception {
+    		@RequestParam(value = "angle", defaultValue = "90") int angle,
+    		@RequestParam(value = "pages", defaultValue = "all") String pageNums) throws Exception {
     	byte[] result = editingService.rotatePdf(file, angle, pageNums);
     	String name = fileUtil.baseName(file.getOriginalFilename())+ "_rotated.pdf";
     	return fileUtil.downloadResponse(result, name, "application/pdf");
