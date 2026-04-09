@@ -32,7 +32,7 @@ public class OptimizationService {
 
     private static final Logger log = LoggerFactory.getLogger(OptimizationService.class);
 
-    
+    // Balanced compression settings (MEDIUM)
     private static final int MAX_IMAGE_DIMENSION = 800;
     private static final float RASTER_DPI = 60f;
 
@@ -54,7 +54,7 @@ public class OptimizationService {
 
             try (PDDocument pdf = PDDocument.load(tempPath.toFile())) {
 
-                //  Remove metadata
+                // 🔥 Remove metadata
                 if (pdf.getDocumentInformation() != null) {
                     pdf.getDocumentInformation().getCOSObject().clear();
                 }
