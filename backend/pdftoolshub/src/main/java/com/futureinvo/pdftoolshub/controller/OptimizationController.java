@@ -30,10 +30,10 @@ public class OptimizationController {
 	@PostMapping("/compress")
 	public ResponseEntity<byte[]> cpmpressPdf(
 			@RequestParam("file") MultipartFile file, 
-			@RequestParam(value = "imageQuality", defaultValue = "0.6") float imageQuality) throws Exception {
+			@RequestParam(value = "imageQuality", defaultValue = "0.6") String imageQuality) throws Exception {
 		 log.info("POST /optimize/compress — {} | quality={}", file.getOriginalFilename(), imageQuality);
 				
-		byte[] result = optimizationService.compressPdf(file, imageQuality);
+		byte[] result = optimizationService.compressPdf(file);
 		String name = fileUtil.baseName(file.getOriginalFilename()) + "." + "compressed.pdf";
 		return fileUtil.downloadResponse(result, name, "application/pdf");
 	}
