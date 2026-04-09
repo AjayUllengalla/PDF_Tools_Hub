@@ -36,7 +36,7 @@ public class OptimizationService {
     private static final int MAX_IMAGE_DIMENSION = 800;
     private static final float RASTER_DPI = 60f;
 
-    // ─────────────────────────────────────────────────────────────
+    // ── Main Compression Logic ────────────────────────────────────
 
     public byte[] compressPdf(MultipartFile file) throws Exception {
 
@@ -54,7 +54,7 @@ public class OptimizationService {
 
             try (PDDocument pdf = PDDocument.load(tempPath.toFile())) {
 
-                // 🔥 Remove metadata
+                // Remove metadata
                 if (pdf.getDocumentInformation() != null) {
                     pdf.getDocumentInformation().getCOSObject().clear();
                 }
@@ -276,4 +276,8 @@ public class OptimizationService {
 
         return out;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0ab80792016082f74c5bef5ec65f76a94409755b
