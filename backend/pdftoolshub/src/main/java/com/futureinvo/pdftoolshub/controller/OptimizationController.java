@@ -33,7 +33,7 @@ public class OptimizationController {
 			@RequestParam(value = "imageQuality", defaultValue = "0.6") float imageQuality) throws Exception {
 		 log.info("POST /optimize/compress — {} | quality={}", file.getOriginalFilename(), imageQuality);
 				
-		byte[] result = optimizationService.compressPdf(file, imageQuality);
+		byte[] result = optimizationService.compressPdf(file);
 		String name = fileUtil.baseName(file.getOriginalFilename()) + "." + "compressed.pdf";
 		return fileUtil.downloadResponse(result, name, "application/pdf");
 	}
