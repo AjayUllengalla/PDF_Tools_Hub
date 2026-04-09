@@ -89,7 +89,7 @@ export default function ToolPage({ title, endpoint }) {
       }
 
       const response = await axios.post(
-        `http://localhost:8080${endpoint}`,
+        `https://pdf-tools-hub-2.onrender.com${endpoint}`,
         formData,
         {
           responseType: "blob",
