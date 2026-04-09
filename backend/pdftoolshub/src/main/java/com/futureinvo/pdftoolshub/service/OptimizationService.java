@@ -205,7 +205,7 @@ public class OptimizationService {
 
         return count;
     }
-
+// Encodes a BufferedImage to JPEG format with specified quality
     private byte[] encodeJpeg(BufferedImage img, float quality) {
 
         try {
@@ -237,7 +237,7 @@ public class OptimizationService {
             return null;
         }
     }
-
+// Converts any image to RGB format, filling transparent areas with white
     private BufferedImage toRgb(BufferedImage src) {
 
         BufferedImage rgb = new BufferedImage(
@@ -254,7 +254,7 @@ public class OptimizationService {
 
         return rgb;
     }
-
+// Scales down the image if it exceeds max dimensions, preserving aspect ratio
     private BufferedImage scaleIfNeeded(BufferedImage src, int maxW, int maxH) {
 
         int w = src.getWidth();
@@ -276,8 +276,4 @@ public class OptimizationService {
 
         return out;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 0ab80792016082f74c5bef5ec65f76a94409755b
